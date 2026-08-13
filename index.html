@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Form</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f2f4f7;
+}
+
+.card{
+    width:92%;
+    max-width:500px;
+    margin:30px auto;
+    background:white;
+    padding:22px;
+    border-radius:16px;
+    box-shadow:0 5px 20px rgba(0,0,0,.1);
+}
+
+h2{text-align:center}
+
+label{
+    display:block;
+    margin-top:15px;
+    font-weight:bold;
+}
+
+input,textarea{
+    width:100%;
+    padding:13px;
+    margin-top:7px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:16px;
+}
+
+textarea{
+    min-height:90px;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    margin-top:20px;
+    border:0;
+    border-radius:8px;
+    background:#2563eb;
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+}
+
+#message{
+    text-align:center;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>User Information</h2>
+
+<form id="userForm">
+
+<label>Name</label>
+<input id="name" maxlength="100" required>
+
+<label>Mobile Number</label>
+<input id="mobile"
+       type="tel"
+       maxlength="15"
+       pattern="[0-9+ -]{7,15}"
+       required>
+
+<label>Email</label>
+<input id="email" type="email" maxlength="150">
+
+<label>Address</label>
+<textarea id="address" maxlength="300"></textarea>
+
+<button type="submit">Submit</button>
+
+<p id="message"></p>
+
+</form>
+
+</div>
+
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp
+}
+from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDuKLW7frq7puxiQ5rVBAfQwXQyyMsGZEc",
+    authDomain: "my-user-data-base.firebaseapp.com",
+    projectId: "my-user-data-base",
+    storageBucket: "my-user-data-base.firebasestorage.app",
+    messagingSenderId: "588340739878",
+    appId: "1:588340739878:web:4f2c23cb7af19a0eb0cbe7",
+    measurementId: "G-FELC4WFX3F"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const form = document.getElementById("userForm");
+const message = document.getElementById("message");
+
+
+form.addEventListener("submit", async (event) => {
+
+    event.preventDefault();
+
+    message.textContent = "Submitting...";
+
+    const name =
+        document.getElementById("name").value.trim();
+
+    const mobile =
+        document.getElementById("mobile").value.trim();
+
+    const email =
+        document.getElementById("email").value.trim();
+
+    const address =
+        document.getElementById("address").value.trim();
+
+    try {
+
+        await addDoc(collection(db, "users"), {
+
+            name: name,
+            mobile: mobile,
+            email: email,
+            address: address,
+            createdAt: serverTimestamp()
+
+        });
+
+        message.textContent = "✅ Data submitted successfully.";
+
+        form.reset();
+
+    } catch(error) {
+
+        console.error(error);
+
+        message.textContent =
+            "❌ Submission failed. Please try again.";
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>
